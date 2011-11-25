@@ -1,0 +1,27 @@
+Mississippi State University
+CSE 4633- Artificial Intelligence
+Final Project- Learning Bayesian Networks
+Matt Hink (mrh208)
+
+1. ABSTRACT
+  There exist several algorithms for learning the structure of Bayesian networks from a given dataset.  In this project, I will compare the algorithmic efficiency of the common K2 algorithm to the A* search method described in [Yuan et al., 2011].
+
+2. DOWNLOADING
+  a. Using Git
+    -The public readonly Git repository is available at 'git://github.com/hink1103/Learning-Bayesian-Networks.git'.
+  b. Downloading as .zip
+    -A .zip archive of this project is available at 'https://github.com/hink1103/Learning-Bayesian-Networks/zipball/master'
+
+3. REQUIREMENTS
+  -Developed using Ruby 1.9.2p290 on Xubuntu 11.10
+
+4. INSTALLATION
+  -This project uses the Bundler gem to manage its dependencies.  Bundler is available at 'http://gembundler.com'.
+  -To install dependencies, issue 'bundle install' within the project root.
+
+5. RUNNING
+  -To run the main program on a selected set of datasets, run 'rake exec'.
+
+6. References
+  [Yuan et al., 2011] Changhe Yuan, Brandon Malone, and Xiaojian Wu. Learning Optimal Bayesian Networks Using A* Search.  Proceedings of the 22nd International Joint Conference on Artificial Intelligence (IJCAI-11), pages 2186-2191, Helsinki, Finland, 2011.
+  
