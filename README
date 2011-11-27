@@ -14,13 +14,13 @@ Matt Hink (mrh208)
 
 3. REQUIREMENTS
   -Developed using Ruby 1.9.2p290 on Xubuntu 11.10
+  -Developed using eclipse on Windows 7 64-bit
 
 4. INSTALLATION
-  -This project uses the Bundler gem to manage its dependencies.  Bundler is available at 'http://gembundler.com'.
-  -To install dependencies, issue 'bundle install' within the project root.
+  -TODO: Use Ant build tasks
 
 5. RUNNING
-  -To run the main program on a selected set of datasets, run 'rake exec'.
+  -TODO: Use Ant build tasks
 
 6. References
   [Yuan et al., 2011] Changhe Yuan, Brandon Malone, and Xiaojian Wu. Learning Optimal Bayesian Networks Using A* Search.  Proceedings of the 22nd International Joint Conference on Artificial Intelligence (IJCAI-11), pages 2186-2191, Helsinki, Finland, 2011.
