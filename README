@@ -3,25 +3,25 @@ CSE 4633- Artificial Intelligence
 Final Project- Learning Bayesian Networks
 Matt Hink (mrh208)
 
-1. ABSTRACT
+1. REQUIREMENTS
+  -Developed using eclipse with Sun Java 6 JRE on Windows 7
+  -Also developed using openjdk-6-jre and ant 1.8.2-3 on Xubuntu 11.10
+
+2. ABSTRACT
   There exist several algorithms for learning the structure of Bayesian networks from a given dataset.  In this project, I will compare the algorithmic efficiency of the common K2 algorithm to the A* search method described in [Yuan et al., 2011].
 
-2. DOWNLOADING
+3. DOWNLOADING
   a. Using Git
     -The public readonly Git repository is available at 'git://github.com/hink1103/Learning-Bayesian-Networks.git'.
   b. Downloading as .zip
     -A .zip archive of this project is available at 'https://github.com/hink1103/Learning-Bayesian-Networks/zipball/master'
 
-3. REQUIREMENTS
-  -Developed using Ruby 1.9.2p290 on Xubuntu 11.10
-  -Developed using eclipse on Windows 7 64-bit
-
 4. INSTALLATION
-  -TODO: Use Ant build tasks
+  -To compile a fresh .jar from source, you may use the Ant command "ant jar".
 
 5. RUNNING
-  -TODO: Use Ant build tasks
+  -To execute the built .jar, issue "java -jar Learning-Bayesian-Networks.jar" at the command line of a system with the Java 6 JRE installed.
 
-6. References
+6. REFERENCES
   [Yuan et al., 2011] Changhe Yuan, Brandon Malone, and Xiaojian Wu. Learning Optimal Bayesian Networks Using A* Search.  Proceedings of the 22nd International Joint Conference on Artificial Intelligence (IJCAI-11), pages 2186-2191, Helsinki, Finland, 2011.
   

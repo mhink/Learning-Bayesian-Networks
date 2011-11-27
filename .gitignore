@@ -1,10 +1,10 @@
 data/*
 bin/*
-Gemfile.lock
-test/*
 *.swp
 *.swo
 /.settings
 /.settings/*
 .project
 .classpath
+/classes/*
+*.jar
