@@ -1,0 +1,12 @@
+
+-NOTES AND FUN FACTS
+
+-"Every edge on the search graph represents an optimal parent set for a variable." -Yuan
+--This makes sense, because each successor chooses a certain variable and calculates the best parent set for that variable,
+--given the variables that have been selected before it.
+
+-"We define edge cost between two search nodes S1, S2 as BEST-MDL(X, S1), where X is the only variable in S2 \ S1"
+
+--SO: there are actually two different uses of BEST-MDL at play here.
+--ACTUAL edge cost, BEST-MDL( S2\S1, S1 )
+--HEURISTIC cost, SUM over all BEST-MDLs for any X not already in the order graph.
