@@ -1,0 +1,10 @@
+data/*
+bin/*
+*.swp
+*.swo
+/.settings
+/.settings/*
+.project
+.classpath
+/classes/*
+*.jar

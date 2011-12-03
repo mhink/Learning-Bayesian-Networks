@@ -1,5 +1,6 @@
 package edu.msstate.cse.mrh208.Bayes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.msstate.cse.mrh208.Dataset;
@@ -8,8 +9,9 @@ public class BayesianNetwork {
 	List<RandomVariable> variablesInNetwork;
 	List<RandomVariable> variablesNotInNetwork;
 	
-	public BayesianNetwork() {
-		
+	public BayesianNetwork(Dataset dataset) {
+		variablesInNetwork = new ArrayList<RandomVariable>();
+		variablesNotInNetwork = new ArrayList<RandomVariable>();
 	}
 	
 	public static BayesianNetwork learnBayesianNetwork(Dataset dataset) {
@@ -28,16 +30,16 @@ public class BayesianNetwork {
 		throw new UnsupportedOperationException();
 	}
 	
-	public float bestMDL(RandomVariable X, List<RandomVariable> VwithoutX) {
+	public float bestMDL(RandomVariable X, List<RandomVariable> VwithoutX, Dataset dataset) {
 		throw new UnsupportedOperationException();
 	}
 	
-	public float MDL(RandomVariable X, List<RandomVariable> parentsOfX) {
+	public float MDL(RandomVariable X, List<RandomVariable> parentsOfX, Dataset dataset) {
 		throw new UnsupportedOperationException();
 	}
 	
-	public float MDLh(RandomVariable X, List<RandomVariable> parentsOfX) {
-		
+	public float MDLh(RandomVariable X, List<RandomVariable> parentsOfX, Dataset dataset) {
+		throw new UnsupportedOperationException();
 	}
 	
 	public float MDLk(RandomVariable X, List<RandomVariable> parentsOfX) {

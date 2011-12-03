@@ -5,7 +5,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import edu.msstate.cse.mrh208.Dataset;
-import edu.msstate.cse.mrh208.PartialEntry;
 
 public class RandomVariable {
 	public List<RandomVariable> parents;
@@ -13,7 +12,8 @@ public class RandomVariable {
 	public String name;
 	
 	public RandomVariable() {
-		
+		parents = new ArrayList<RandomVariable>();
+		states = new ArrayList<String>();		
 	}
 	
 	@Override
@@ -25,18 +25,5 @@ public class RandomVariable {
 		if(this.name.equals(((RandomVariable)other).name)) return true;
 		
 		return false;
-	}
-	
-	public List<PartialEntry> combineWith(RandomVariable other) {
-		List<PartialEntry> partialEntries = new ArrayList<PartialEntry>();
-		for(String thisState : this.states) 
-			for(String otherState : other.states) {
-				PartialEntry entry = new PartialEntry();
-				entry.put(this, thisState);
-				entry.put(other, otherState);
-				partialEntries.add(entry);
-			}
-		
-		return partialEntries;
 	}
 }
