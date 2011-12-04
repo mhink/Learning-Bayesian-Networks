@@ -1,17 +1,19 @@
 package edu.msstate.cse.mrh208.Bayes;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import edu.msstate.cse.mrh208.Dataset;
 
 public class BayesianNetwork {
-	List<RandomVariable> variablesInNetwork;
-	List<RandomVariable> variablesNotInNetwork;
+	Set<RandomVariable> variablesInNetwork;
+	Set<RandomVariable> variablesNotInNetwork;
 	
 	public BayesianNetwork(Dataset dataset) {
-		variablesInNetwork = new ArrayList<RandomVariable>();
-		variablesNotInNetwork = new ArrayList<RandomVariable>();
+		variablesInNetwork = new HashSet<RandomVariable>();
+		variablesNotInNetwork = new HashSet<RandomVariable>();
 	}
 	
 	public static BayesianNetwork learnBayesianNetwork(Dataset dataset) {

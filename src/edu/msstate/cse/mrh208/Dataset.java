@@ -1,99 +1,89 @@
 package edu.msstate.cse.mrh208;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Sets;
 
 import edu.msstate.cse.mrh208.Bayes.RandomVariable;
 
 public class Dataset {
 	public class Entry {
-		private List<String> entryValues;
+		private Map<RandomVariable, String> entryValues;
+		
 		public Entry() {
-			entryValues = new ArrayList<String>();
+			entryValues = new HashMap<RandomVariable, String>();
+			
+			Iterator<RandomVariable> variablesIterator = variables.iterator();
+			while(variablesIterator.hasNext()) {
+				entryValues.put(variablesIterator.next(), null);
+			}
 		}
-		public boolean setVariable(RandomVariable randomVariable, String state) {
-			if(!randomVariable.states.contains(state)) return false;
-			if(!variables.contains(randomVariable)) { variables.add(randomVariable); }
-			
-			int idx = variables.indexOf(randomVariable);
-			
-			if(entryValues.size() > idx) entryValues.set(idx, state);
-			else entryValues.add(state);
-			
-			return true;
+		
+		public Entry(Map<RandomVariable, String> datapoint) {
+			entryValues = new HashMap<RandomVariable, String>(datapoint);
 		}
-		public String getVariableState(RandomVariable randomVariable) {
-			if(!variables.contains(randomVariable)) return null;
-			
-			return entryValues.get(variables.indexOf(randomVariable));
+		
+		public boolean isConsistentWith(RandomVariable rv, String state) {
+			if(!entryValues.containsKey(rv)) return false;
+			if(!entryValues.get(rv).equals(state)) return false;
+			else return true;
 		}
 		
 		public Entry clone() {
 			Entry clone = new Entry();
-			for(int i = 0; i < entryValues.size(); i++) {
-				clone.entryValues.add(this.entryValues.get(i));
+			for(Map.Entry<RandomVariable, String> entryValue : entryValues.entrySet()) {
+				clone.entryValues.put(entryValue.getKey(), entryValue.getValue());
 			}
+			
 			return clone;
 		}
 	}
-	private List<RandomVariable>	variables;
-	public List<Entry> 			entries;
+	private Set<RandomVariable>			variables;
+	public 	Multiset<Entry> 			entries;
 	
 	public Dataset() {
 		//TODO: Dataset constructor needs to be reading from a file somehow.  Sad but true.
-		//TODO: Dataset needs neccessary methods for BayesianNetwork to access info it needs.
+		variables 	= new HashSet<RandomVariable>();
+		entries		= HashMultiset.create();
 	}
 	
-	public static Dataset filterOnVariable(RandomVariable rv, String rvState, Dataset toFilter) {
-		Dataset filtered = new Dataset();
-		for(Entry entry : toFilter.entries) {
-			if(entry.getVariableState(rv).equals(rvState)) filtered.entries.add(entry);
-		}
-		return filtered;
-	}
-	
-	public int entriesConsistentWith(List<RandomVariable> vars, List<String> varStates) {
-		Dataset filtered = this;
-		
-		for(int i = 0; i < vars.size(); i++) {
-			filtered = Dataset.filterOnVariable(vars.get(i), varStates.get(i), filtered);
-		}
-		
-		return filtered.entries.size();
-	}
-	
-	public static Dataset allCombosOfStates(List<RandomVariable> randomVariables) {
+	public static Dataset fromData(List<Map<RandomVariable, String>> data) {
 		Dataset toReturn = new Dataset();
-		toReturn.variables = new ArrayList<RandomVariable>();
-		toReturn.entries = new ArrayList<Entry>();
-		toReturn.entries.add(toReturn.new Entry());
-		
-		for(RandomVariable randomVariable : randomVariables) {
-			toReturn.combine(randomVariable);
+		for(Map<RandomVariable, String> datapoint : data) {
+			toReturn.entries.add(toReturn.new Entry(datapoint));
 		}
-		
 		return toReturn;
 	}
 	
-	public Dataset combine(RandomVariable rv) {
-		int entriesSize = this.entries.size();
-		this.copy(rv.states.size());
+	public Dataset filter(Map<RandomVariable, String> constraints) {
+		//I gotta say... I'm pleased with how elegant this code is.
+		Dataset consistent = new Dataset();
 		
-		for(int i = 0; i < this.entries.size(); i++) {
-			String state = rv.states.get(i / entriesSize);
-			this.entries.get(i).setVariable(rv, state);
+		entryloop:
+		for(Entry entry : entries) {
+			for(Map.Entry<RandomVariable, String> constraint : constraints.entrySet()) {
+				if(!entry.isConsistentWith(
+						constraint.getKey(), 
+						constraint.getValue())){
+					continue entryloop;
+				}
+			}
+			consistent.entries.add(entry);
 		}
 		
-		return this;
+		return consistent;
 	}
 	
-	public Dataset copy(int times) {
-		int j = this.entries.size() * (times- 1) ;
-		for(int i = 0; i < j; i++) {
-			this.entries.add(this.entries.get(i % j).clone());			//NEED TO BE ABLE TO DEEP COPY ENTRIES
-		} 
-		
-		return this;
-	}
+	
 }
