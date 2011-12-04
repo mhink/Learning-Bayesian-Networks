@@ -50,7 +50,7 @@ public class Dataset {
 		}
 	}
 	private Set<RandomVariable>			variables;
-	public 	Multiset<Entry> 			entries;
+	private Multiset<Entry> 			entries;
 	
 	public Dataset() {
 		//TODO: Dataset constructor needs to be reading from a file somehow.  Sad but true.
@@ -64,6 +64,10 @@ public class Dataset {
 			toReturn.entries.add(toReturn.new Entry(datapoint));
 		}
 		return toReturn;
+	}
+	
+	public Set<RandomVariable> getVariables() {
+		return variables;
 	}
 	
 	public Dataset filter(Map<RandomVariable, String> constraints) {

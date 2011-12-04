@@ -10,37 +10,78 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import edu.msstate.cse.mrh208.Dataset;
+import edu.msstate.cse.mrh208.Algorithms.AStar;
+import edu.msstate.cse.mrh208.Algorithms.BNSearchNode;
 
 public class BayesianNetwork {
-	Set<RandomVariable> variablesInNetwork;
-	Set<RandomVariable> variablesNotInNetwork;
+	public static BayesianNetwork goalNetwork;
+	public Dataset dataset;
+	private double heuristic = Double.NaN;
+	private Set<RandomVariable> bestParentSet;
+	public Set<RandomVariable> variablesInNetwork;
+	public Set<RandomVariable> variablesNotInNetwork;
 	
-	public BayesianNetwork(Dataset dataset) {
-		variablesInNetwork = new HashSet<RandomVariable>();
-		variablesNotInNetwork = new HashSet<RandomVariable>();
+	private BayesianNetwork(Dataset dataset) {
+		this.dataset = dataset;
+		this.variablesNotInNetwork = new HashSet<RandomVariable>(dataset.getVariables());
+		this.variablesInNetwork = new HashSet<RandomVariable>();
 	}
 	
 	public static BayesianNetwork learnBayesianNetwork(Dataset dataset) {
-		//TODO: "BN.learn" should be calling the AStar.Search method.
-		throw new UnsupportedOperationException();
+		BayesianNetwork bayesianNetwork = new BayesianNetwork(dataset);	
+		BayesianNetwork.goalNetwork		= new BayesianNetwork(dataset);
+		BayesianNetwork.goalNetwork.variablesInNetwork 		= new HashSet<RandomVariable>(dataset.getVariables());
+		BayesianNetwork.goalNetwork.variablesNotInNetwork 	= new HashSet<RandomVariable>();
+		
+		BayesianNetwork result = AStar.Search(bayesianNetwork);
+		
+		return result;
 	}
 	
-	
-	public void print() {
-		//TODO: "BN.print" is low priority.
-		throw new UnsupportedOperationException();
+	public BayesianNetwork clone() {
+		BayesianNetwork clone = new BayesianNetwork(this.dataset);
+		clone.variablesInNetwork	.addAll(this.variablesInNetwork);
+		clone.variablesNotInNetwork	.addAll(this.variablesNotInNetwork);
+		return clone;
 	}
 	
-	public boolean hasSameVariables(BayesianNetwork other) {
-		//TODO: "BN.hasSameRVs" is medium priority.  It's gonna be necessary for A* goal state evaluation.
-		throw new UnsupportedOperationException();
+	public Set<RandomVariable> bestParentSet(RandomVariable X) {
+		if(bestParentSet == null) bestParentSet = calculateBestParentSet(X, this.variablesNotInNetwork, this.dataset);
+		return bestParentSet;
 	}
 	
-	public double heuristic(RandomVariable U, Set<RandomVariable> nonNetworkVariables, Dataset dataset) {
-		return 0d;
+	public double heuristic(RandomVariable U) {
+		if(heuristic == Double.NaN) heuristic = calculateHeuristic(U, variablesNotInNetwork, dataset);
+		return heuristic;
 	}
 	
-	public double bestMDL(RandomVariable X, Set<RandomVariable> parentCandidates, Dataset dataset) {
+	public double pathCost(RandomVariable X, Set<RandomVariable> S1) {
+		return calculateBestMDL(X, S1, dataset);
+	}
+	
+	public boolean equals(BayesianNetwork other) {
+		if(this.variablesInNetwork.equals(other.variablesInNetwork)) return true;
+		else return false;
+	}
+	
+	private static double calculateHeuristic(RandomVariable U, Set<RandomVariable> V, Dataset dataset) {
+		double heuristicValue = 0d;
+		
+		Set<RandomVariable> VwithoutX;
+		Set<RandomVariable> VwithoutU = new HashSet<RandomVariable>(V);
+		VwithoutU.remove(U);
+		
+		for(RandomVariable X : VwithoutU) {
+			VwithoutX = new HashSet<RandomVariable>(V);
+			VwithoutX.remove(X);
+			
+			heuristicValue += calculateBestMDL(X, V, dataset);
+		}
+		
+		return heuristicValue;
+	}
+	
+	private static double calculateBestMDL(RandomVariable X, Set<RandomVariable> parentCandidates, Dataset dataset) {
 		Set<Set<RandomVariable>> parentCandidatePowerSet = Sets.powerSet(parentCandidates);
 		double lowest = Double.POSITIVE_INFINITY;
 		Set<RandomVariable> bestParentCandidate = new HashSet<RandomVariable>();
@@ -56,7 +97,23 @@ public class BayesianNetwork {
 		return lowest;		
 	}
 	
-	public static double MDL(RandomVariable X, Set<RandomVariable> parentsOfX, Dataset dataset) {
+	private static Set<RandomVariable> calculateBestParentSet(RandomVariable X, Set<RandomVariable> parentCandidates, Dataset dataset) {
+		Set<Set<RandomVariable>> parentCandidatePowerSet = Sets.powerSet(parentCandidates);
+		double lowest = Double.POSITIVE_INFINITY;
+		Set<RandomVariable> bestParentCandidate = new HashSet<RandomVariable>();
+		
+		for(Set<RandomVariable> parentCandidate : parentCandidatePowerSet) {
+			double mdl = MDL(X, parentCandidate, dataset);
+			if(mdl < lowest) {
+				lowest = mdl;
+				bestParentCandidate = parentCandidate;
+			}
+		}
+		
+		return bestParentCandidate;		
+	}
+	
+	private static double MDL(RandomVariable X, Set<RandomVariable> parentsOfX, Dataset dataset) {
 		double result = 0d;
 		result += MDLh(X, parentsOfX, dataset);
 		result += ((log2(dataset.size()) / 2) * MDLk(X, parentsOfX));
@@ -64,7 +121,7 @@ public class BayesianNetwork {
 		return result;
 	}
 	
-	public static double MDLh(RandomVariable X, Set<RandomVariable> parentsOfX, Dataset dataset) {
+	private static double MDLh(RandomVariable X, Set<RandomVariable> parentsOfX, Dataset dataset) {
 		Set<RandomVariable> randomVariables = new HashSet(parentsOfX);
 		randomVariables.add(X);
 		
@@ -84,7 +141,7 @@ public class BayesianNetwork {
 		return (sum * -1.0);
 	}
 	
-	public static double MDLk(RandomVariable X, Set<RandomVariable> parentsOfX) {
+	private static double MDLk(RandomVariable X, Set<RandomVariable> parentsOfX) {
 		double result = 1d;
 		
 		for(RandomVariable p : parentsOfX) {
@@ -94,7 +151,12 @@ public class BayesianNetwork {
 		return ( ( X.states.size() - 1 ) * result );
 	}
 	
-	public static double log2(double x) {
+	private static double log2(double x) {
 		return (Math.log(x) / Math.log(2));
+	}
+	
+	public void print() {
+		//TODO: "BN.print" is low priority.
+		throw new UnsupportedOperationException();
 	}
 }
