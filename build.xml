@@ -1,26 +1,53 @@
 <?xml version="1.0"?>
-<project name="Learning-Bayesian-Networks" default="compile">
+<project name="Learning-Bayesian-Networks" default="dist" basedir=".">
+    <description>
+        An implementation of the A* search algorithm used to help build Bayesian networks.
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="libs" location="lib"/>
 
-    <target name="clean" description="remove intermediate files">
-        <delete dir="classes"/>
-    </target>
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
 
-    <target name="clobber" depends="clean" description="remove all artifact files">
-        <delete file="Learning-Bayesian-Networks.jar"/>
-    </target>
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}"/>
+  </target>
 
-    <target name="compile" description="compile the Java source code to class files">
-        <mkdir dir="classes"/>
-        <javac srcdir="." destdir="classes"/>
-    </target>
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/lib"/>
 
-    <target name="jar" depends="compile" description="build Java class files into .jar">
-        <jar destfile="Learning-Bayesian-Networks.jar">
-            <fileset dir="classes" includes="**/*.class"/>
-            <manifest>
-                <attribute name="Main-Class" value="edu.msstate.cse.mrh208.Program"/>
-            </manifest>
-        </jar>
-    </target>
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar destfile="${dist}/lib/MyProject-${DSTAMP}.jar">
+    	<fileset dir="${build}" />
+    	<restrict>
+    		<name name="**/*.class"/>
+    		<archives>
+    			<zips>
+    				<fileset dir="${libs}" includes="**/*.jar"/>
+    			</zips>
+    		</archives>
+    	</restrict>
+    	<manifest>
+    		<attribute name="Main-Class" value="edu.msstate.cse.mrh208.Program"/>
+    	</manifest>
+   	</jar>
+  </target>
 
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
 </project>
