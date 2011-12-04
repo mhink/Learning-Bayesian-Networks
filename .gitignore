@@ -1,9 +1,17 @@
 data/*
+<<<<<<< HEAD
+=======
+bin/*
+>>>>>>> 8e7d08c9a4ea2dcadc907b4cbfa4b60578fb7bd2
 *.swp
 *.swo
 /.settings
 /.settings/*
 .project
 .classpath
+<<<<<<< HEAD
 *.class
+=======
+/classes/*
+>>>>>>> 8e7d08c9a4ea2dcadc907b4cbfa4b60578fb7bd2
 *.jar

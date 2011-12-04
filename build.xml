@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<project name="Learning-Bayesian-Networks" default="compile">
+
+    <target name="clean" description="remove intermediate files">
+        <delete dir="classes"/>
+    </target>
+
+    <target name="clobber" depends="clean" description="remove all artifact files">
+        <delete file="Learning-Bayesian-Networks.jar"/>
+    </target>
+
+    <target name="compile" description="compile the Java source code to class files">
+        <mkdir dir="classes"/>
+        <javac srcdir="." destdir="classes"/>
+    </target>
+
+    <target name="jar" depends="compile" description="build Java class files into .jar">
+        <jar destfile="Learning-Bayesian-Networks.jar">
+            <fileset dir="classes" includes="**/*.class"/>
+            <manifest>
+                <attribute name="Main-Class" value="edu.msstate.cse.mrh208.Program"/>
+            </manifest>
+        </jar>
+    </target>
+
+</project>
