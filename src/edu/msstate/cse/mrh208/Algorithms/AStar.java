@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.TreeSet;
 
-import edu.msstate.cse.mrh208.BNPriorityQueue;
-
 import edu.msstate.cse.mrh208.Bayes.BayesianNetwork;
 
 
