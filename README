@@ -17,10 +17,13 @@ Matt Hink (mrh208)
     -A .zip archive of this project is available at 'https://github.com/hink1103/Learning-Bayesian-Networks/zipball/master'
 
 4. INSTALLATION
-  -To compile a fresh .jar from source, you may use the Ant command "ant jar".
+  -Dependencies include:
+    guava-libraries (http://code.google.com/p/guava-libraries/)
+  -Please note that these dependencies are NOT INCLUDED BY DEFAULT. Ant must be connected to the Internet to fetch them.
+  -To compile a fresh .jar from source, issue "ant" from the project root.
 
 5. RUNNING
-  -To execute the built .jar, issue "java -jar Learning-Bayesian-Networks.jar" at the command line of a system with the Java 6 JRE installed.
+  -To execute the built .jar, issue "java -jar /dist/Learning-Bayesian-Networks*.jar" at the command line of a system with the Java 6 JRE installed.
 
 6. REFERENCES
   [Yuan et al., 2011] Changhe Yuan, Brandon Malone, and Xiaojian Wu. Learning Optimal Bayesian Networks Using A* Search.  Proceedings of the 22nd International Joint Conference on Artificial Intelligence (IJCAI-11), pages 2186-2191, Helsinki, Finland, 2011.
