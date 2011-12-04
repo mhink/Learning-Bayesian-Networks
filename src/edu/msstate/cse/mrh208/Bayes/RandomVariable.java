@@ -37,7 +37,7 @@ public class RandomVariable {
 		return false;
 	}
 	
-	public static List<Map<RandomVariable, String>> combineVariables(List<RandomVariable> randomVariables) {
+	public static List<Map<RandomVariable, String>> combineVariables(Set<RandomVariable> randomVariables) {
 		List<Set<String>> 					states 	= new ArrayList<Set<String>>();
 		List<Map<RandomVariable, String>> 	result 	= new ArrayList<Map<RandomVariable, String>>();
 		

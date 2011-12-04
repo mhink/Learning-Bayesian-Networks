@@ -54,7 +54,7 @@ public class Program {
 		
 		Dataset testDataset		 = Dataset.fromData(testData);
 		
-		double mdlh = BayesianNetwork.MDLh(rv3, parents, testDataset);
+		//double mdlh = BayesianNetwork.MDLh(rv3, parents, testDataset);
 		
 		System.out.println("Done");
 		

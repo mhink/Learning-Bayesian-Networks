@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
+
 import edu.msstate.cse.mrh208.Dataset;
 
 public class BayesianNetwork {
@@ -34,16 +36,36 @@ public class BayesianNetwork {
 		throw new UnsupportedOperationException();
 	}
 	
-	public float bestMDL(RandomVariable X, List<RandomVariable> VwithoutX, Dataset dataset) {
-		throw new UnsupportedOperationException();
+	public double heuristic(RandomVariable U, Set<RandomVariable> nonNetworkVariables, Dataset dataset) {
+		return 0d;
 	}
 	
-	public float MDL(RandomVariable X, List<RandomVariable> parentsOfX, Dataset dataset) {
-		throw new UnsupportedOperationException();
+	public double bestMDL(RandomVariable X, Set<RandomVariable> parentCandidates, Dataset dataset) {
+		Set<Set<RandomVariable>> parentCandidatePowerSet = Sets.powerSet(parentCandidates);
+		double lowest = Double.POSITIVE_INFINITY;
+		Set<RandomVariable> bestParentCandidate = new HashSet<RandomVariable>();
+		
+		for(Set<RandomVariable> parentCandidate : parentCandidatePowerSet) {
+			double mdl = MDL(X, parentCandidate, dataset);
+			if(mdl < lowest) {
+				lowest = mdl;
+				bestParentCandidate = parentCandidate;
+			}
+		}
+		
+		return lowest;		
 	}
 	
-	public static double MDLh(RandomVariable X, List<RandomVariable> parentsOfX, Dataset dataset) {
-		List<RandomVariable> randomVariables = new ArrayList(parentsOfX);
+	public static double MDL(RandomVariable X, Set<RandomVariable> parentsOfX, Dataset dataset) {
+		double result = 0d;
+		result += MDLh(X, parentsOfX, dataset);
+		result += ((log2(dataset.size()) / 2) * MDLk(X, parentsOfX));
+		
+		return result;
+	}
+	
+	public static double MDLh(RandomVariable X, Set<RandomVariable> parentsOfX, Dataset dataset) {
+		Set<RandomVariable> randomVariables = new HashSet(parentsOfX);
 		randomVariables.add(X);
 		
 		List<Map<RandomVariable, String>> constraintsList = RandomVariable.combineVariables(randomVariables);
@@ -62,7 +84,7 @@ public class BayesianNetwork {
 		return (sum * -1.0);
 	}
 	
-	public double MDLk(RandomVariable X, List<RandomVariable> parentsOfX) {
+	public static double MDLk(RandomVariable X, Set<RandomVariable> parentsOfX) {
 		double result = 1d;
 		
 		for(RandomVariable p : parentsOfX) {
