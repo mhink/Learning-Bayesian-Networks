@@ -38,13 +38,8 @@ public class BayesianNetwork {
 		throw new UnsupportedOperationException();
 	}
 	
-<<<<<<< HEAD
 	public float MDLh(RandomVariable X, List<RandomVariable> parentsOfX, Dataset dataset) {
 		throw new UnsupportedOperationException();
-=======
-	public float MDLh(RandomVariable X, List<RandomVariable> parentsOfX) {
-    throw new UnsupportedOperationException();		
->>>>>>> 8e7d08c9a4ea2dcadc907b4cbfa4b60578fb7bd2
 	}
 	
 	public float MDLk(RandomVariable X, List<RandomVariable> parentsOfX) {
