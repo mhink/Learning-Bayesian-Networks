@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import com.google.common.collect.Maps;
@@ -60,5 +61,9 @@ public class RandomVariable {
 		}
 		
 		return result;
+	}
+	
+	public String randomState() {
+		return states.toArray(new String[0])[new Random().nextInt(states.size())];
 	}
 }

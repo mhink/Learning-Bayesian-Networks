@@ -85,5 +85,8 @@ public class Dataset {
 		return consistent;
 	}
 	
+	public int size() {
+		return entries.size();
+	}
 	
 }
