@@ -1,15 +1,13 @@
 package edu.msstate.cse.mrh208.Algorithms;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import java.util.PriorityQueue;
 import java.util.TreeSet;
 
 import edu.msstate.cse.mrh208.Bayes.BayesianNetwork;
+import edu.msstate.cse.mrh208.Loggable;
 
 
-public class AStar {
+public class AStar extends Loggable{
 	
 	public static BayesianNetwork Search(BayesianNetwork initialNetwork) {
 		HashSet			<BNSearchNode> 		closedSet 	= new HashSet<BNSearchNode>();
@@ -19,7 +17,6 @@ public class AStar {
 		
 		while(!openSet.isEmpty()) {
 			BNSearchNode currentNode = openSet.pollFirst();
-			
 			if(currentNode.isGoal()) {
 				return currentNode.bayesianNetwork;
 			}

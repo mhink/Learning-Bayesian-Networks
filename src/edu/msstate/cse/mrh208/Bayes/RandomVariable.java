@@ -3,20 +3,17 @@ package edu.msstate.cse.mrh208.Bayes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import edu.msstate.cse.mrh208.Dataset;
+import edu.msstate.cse.mrh208.Loggable;
 
-public class RandomVariable {
+public class RandomVariable extends Loggable{
 	public Set<RandomVariable> parents;
 	public Set<String> states;
 	public String name;
@@ -24,6 +21,32 @@ public class RandomVariable {
 	public RandomVariable() {
 		parents = new HashSet<RandomVariable>();
 		states = new HashSet<String>();
+	}
+	
+	public String toShortString(int tabDepth) {
+		return super.toString(tabDepth).replace("RandomVariable@", "\"" + name+"\"@");
+	}
+	
+	public String toShortString() {
+		return this.toShortString(0);
+	}
+	
+	@Override
+	public String toString() {
+		return this.toString(0);
+	}
+	
+	@Override
+	public String toString(int tabDepth) {		
+		StringBuilder sb = new StringBuilder(super.toString(tabDepth));
+			sb.append(tabs(tabDepth)).append("\tName: \t\t\"" + name + "\"");
+			sb.append(tabs(tabDepth)).append("\tStates: \t{ ");
+		for(String state : states) sb.append(state + " ");
+		sb.deleteCharAt(sb.length()-1).append(" }")
+			.append(tabs(tabDepth)).append("\tParents:\t{ ");
+		for(RandomVariable parent : parents) sb.append(parent.toShortString() + " ");
+		sb.deleteCharAt(sb.length()-1).append(" }");
+		return sb.toString();
 	}
 	
 	@Override
@@ -61,6 +84,14 @@ public class RandomVariable {
 		}
 		
 		return result;
+	}
+	
+	public RandomVariable copyWithoutParents() {
+		RandomVariable clone = new RandomVariable();
+		clone.states.addAll(this.states);
+		clone.name = this.name;
+		
+		return clone;
 	}
 	
 	public String randomState() {

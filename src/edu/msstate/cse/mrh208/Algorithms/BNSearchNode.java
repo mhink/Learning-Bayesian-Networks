@@ -1,22 +1,21 @@
 package edu.msstate.cse.mrh208.Algorithms;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import java.util.PriorityQueue;
 import java.util.Set;
 
 import edu.msstate.cse.mrh208.Bayes.BayesianNetwork;
 import edu.msstate.cse.mrh208.Bayes.RandomVariable;
+import edu.msstate.cse.mrh208.Loggable;
 
 //NOTE: The search graph is an order graph of variables.
-public class BNSearchNode implements Comparable<BNSearchNode>{
+public class BNSearchNode extends Loggable implements Comparable<BNSearchNode>{
 	
 	BNSearchNode 		parent;
 	BayesianNetwork 	bayesianNetwork;
 	double 				pathCost;
 	double 				heuristicValue;
 	Set<BNSearchNode> 	successors;
+	RandomVariable		randomVariable;
 	
 	
 	@Override
@@ -30,8 +29,15 @@ public class BNSearchNode implements Comparable<BNSearchNode>{
 	
 	@Override
 	public int hashCode() {
-		//TODO: Figure out a hashing function for BNSearchNodes. (Maybe based on underlying BN hashcodes?)
-		throw new UnsupportedOperationException();
+		//TODO: make sure this actually works as intended.
+		//In other words, ensure that
+		//BNSN1 == BNSN2 => BNSN1.hash == BNSN3.hash
+		int hash = 1;
+		hash = hash * 31 + bayesianNetwork.hashCode();
+		hash = hash * 31 + Double.valueOf(pathCost).hashCode();
+		hash = hash * 31 + Double.valueOf(heuristicValue).hashCode();
+		
+		return hash;
 	}
 	
 	@Override
@@ -44,14 +50,15 @@ public class BNSearchNode implements Comparable<BNSearchNode>{
 	}
 	
 	public BNSearchNode(BayesianNetwork bayesianNetwork) {
-		this.parent = null;
-		this.bayesianNetwork = bayesianNetwork.clone();
-		this.pathCost = 0;
-		this.heuristicValue = 0;
+		this.parent 			= null;
+		this.bayesianNetwork 	= bayesianNetwork.clone();
+		this.pathCost			= 0;
+		this.heuristicValue 	= 0;
 	}
 	
 	public BNSearchNode(BNSearchNode parent, RandomVariable X, BayesianNetwork bayesianNetwork, double parentPathCost) {
 		this.parent = parent;
+		this.randomVariable 	= X.copyWithoutParents();
 		this.bayesianNetwork 	= bayesianNetwork.clone();
 		this.bayesianNetwork.variablesNotInNetwork	.remove	(X);
 		this.bayesianNetwork.variablesInNetwork		.add	(X);
@@ -71,8 +78,8 @@ public class BNSearchNode implements Comparable<BNSearchNode>{
 	
 	public void expand() {
 		successors = new HashSet<BNSearchNode>();
-		for(RandomVariable X : this.bayesianNetwork.variablesNotInNetwork) {
-			successors.add(new BNSearchNode(this, X, this.bayesianNetwork, this.pathCost));			
+		for(RandomVariable X : bayesianNetwork.variablesNotInNetwork) {
+			successors.add(new BNSearchNode(this, X, bayesianNetwork, pathCost));			
 		}
 	}
 	
@@ -90,6 +97,28 @@ public class BNSearchNode implements Comparable<BNSearchNode>{
 		if(bnsn1.pathCost == bnsn2.pathCost)return bnsn2;
 		
 		return null;
+	}
+	
+	@Override
+	public String toString() {
+		return this.toString(0);
+	}
+	
+	@Override
+	public String toString(int tabDepth) {
+		StringBuilder tabSB = new StringBuilder("\n");
+		for(int i = 0; i < tabDepth; i++) tabSB.append("\t");
+		String tabs = tabSB.toString();
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(tabs + super.toString());
+		sb.append(tabs).append("\t").append(this.bayesianNetwork.toString(tabDepth));
+		sb.append(tabs).append("\n\tH:\t" + this.heuristicValue);
+		sb.append(tabs).append("\n\tPC:\t" + this.pathCost);
+		if(randomVariable != null) sb.append(tabs).append("\n\t" + randomVariable.toShortString());
+		else sb.append(tabs).append("\n\tnull");
+		
+		return sb.toString();
 	}
 
 }

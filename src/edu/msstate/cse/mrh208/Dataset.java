@@ -1,24 +1,18 @@
 package edu.msstate.cse.mrh208;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
-import com.google.common.collect.Sets;
-
 import edu.msstate.cse.mrh208.Bayes.RandomVariable;
 
-public class Dataset {
-	public class Entry {
+public class Dataset extends Loggable{
+	public class Entry extends Loggable{
 		private Map<RandomVariable, String> entryValues;
 		
 		public Entry() {
@@ -40,6 +34,26 @@ public class Dataset {
 			else return true;
 		}
 		
+		@Override
+		public String toString() {
+			return this.toString(0);
+		}
+		
+		@Override
+		public String toString(int tabDepth) {			
+			StringBuilder sb = new StringBuilder(tabs(tabDepth) + super.toString());
+			
+			sb.append("[ ");
+			for(String entryValue : entryValues.values()) sb.append(entryValue + " ");
+			sb.deleteCharAt(sb.length()-1).append(" ]\t");
+			
+			sb.append("\t{ ");
+			for(RandomVariable rv : entryValues.keySet()) sb.append(rv.toShortString() + "\t");
+			sb.deleteCharAt(sb.length()-1).append(" }");
+			
+			return sb.toString();
+		}
+		
 		public Entry clone() {
 			Entry clone = new Entry();
 			for(Map.Entry<RandomVariable, String> entryValue : entryValues.entrySet()) {
@@ -58,8 +72,10 @@ public class Dataset {
 		entries		= HashMultiset.create();
 	}
 	
-	public static Dataset fromData(List<Map<RandomVariable, String>> data) {
+	public static Dataset fromData(List<Map<RandomVariable, String>> data, Set<RandomVariable> variables) {
 		Dataset toReturn = new Dataset();
+		toReturn.variables = variables;
+		log("This variable list is being used", toReturn.variables);
 		for(Map<RandomVariable, String> datapoint : data) {
 			toReturn.entries.add(toReturn.new Entry(datapoint));
 		}
@@ -93,4 +109,15 @@ public class Dataset {
 		return entries.size();
 	}
 	
+	@Override
+	public String toString() {
+		return this.toString(0);
+	}
+	
+	@Override
+	public String toString(int tabDepth) {		
+		StringBuilder sb = new StringBuilder(tabs(tabDepth) + super.toString());
+		for(Entry entry : entries) sb.append(tabs(tabDepth)).append("\t").append(entry.toString());
+		return sb.toString();
+	}
 }

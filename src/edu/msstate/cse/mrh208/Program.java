@@ -5,17 +5,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
-import java.util.Stack;
-
-import com.google.common.collect.Multiset;
-
-import edu.msstate.cse.mrh208.Algorithms.AStar;
 import edu.msstate.cse.mrh208.Bayes.BayesianNetwork;
 import edu.msstate.cse.mrh208.Bayes.RandomVariable;
 
-public class Program {
+public class Program extends Loggable{
 	
 	public static void main(String[] args) {
 		
@@ -43,24 +37,15 @@ public class Program {
 			constraints.put(rv3, rv3.randomState());
 			testData.add(constraints);
 		}
+		Set<RandomVariable> vars = new HashSet<RandomVariable>();
+		vars.add(rv1);
+		vars.add(rv2);
+		vars.add(rv3);
+	
+		Dataset dataset = Dataset.fromData(testData, vars);
+		dataset.toString();
+		BayesianNetwork bayesianNetwork = BayesianNetwork.learnBayesianNetwork(dataset);
 		
-		List<RandomVariable> variables = new ArrayList<RandomVariable>();
-		variables.add(rv1);
-		variables.add(rv2);
-		variables.add(rv3);
-		List<RandomVariable> parents = new ArrayList<RandomVariable>();
-		parents.add(rv1);
-		parents.add(rv2);
-		
-		Dataset testDataset		 = Dataset.fromData(testData);
-		
-		//double mdlh = BayesianNetwork.MDLh(rv3, parents, testDataset);
-		
-		System.out.println("Done");
-		
-//		Dataset dataset = new Dataset();
-//		BayesianNetwork bayesianNetwork = BayesianNetwork.learnBayesianNetwork(dataset);
-//		
-//		bayesianNetwork.print();
+		//bayesianNetwork.print();
 	}
 }
