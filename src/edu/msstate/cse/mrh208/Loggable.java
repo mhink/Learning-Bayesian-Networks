@@ -33,35 +33,45 @@ public abstract class Loggable {
 		return toString(0);
 	}
 	
+	public String toShortString(int tabDepth) {
+		StringBuilder sb = new StringBuilder(newline(tabDepth));
+		sb.append(super.toString()
+				.replace("edu.msstate.cse.mrh208.", "")
+				.replace("Algorithms.", "")
+				.replace("Bayes.", "")).append(")");
+		
+		String test = sb.toString();
+		String sbNameOnly = test.replaceAll("\n\t*", "").replaceAll("@.*", "");
+		String sbHashOnly = test.replaceAll("\n\t*", "").replaceAll(".*@", "");
+		
+		int ln = (((sbNameOnly.length() + 1) % 4) + sbHashOnly.length());
+		if(ln < 8) sb.append("\t");
+		sb.append("\t");
+		return "(" + sb.toString().replaceAll("@", " @ ");
+	}
+	
 	public String toString(int tabDepth) {		
-		StringBuilder sb = new StringBuilder(tabs(tabDepth));
+		StringBuilder sb = new StringBuilder(newline(tabDepth));
 		sb.append(super.toString()
 				.replace("edu.msstate.cse.mrh208.", "")
 				.replace("Algorithms.", "")
 				.replace("Bayes.", ""));
 		
 		String test = sb.toString();
-		int sbNameOnly = test.replaceAll("@.*", "").length() + 1;
-		int sbHashOnly = test.replaceAll(".*@", "").length();
+		String sbNameOnly = test.replaceAll("\n\t*", "").replaceAll("@.*", "");
+		String sbHashOnly = test.replaceAll("\n\t*", "").replaceAll(".*@", "");
 		
-		int ln = ((sbNameOnly % 4) + sbHashOnly);
+		int ln = (((sbNameOnly.length() + 1) % 4) + sbHashOnly.length());
 		if(ln < 8) sb.append("\t");
 		sb.append("\t");
 		return sb.toString();
 	}
 
-	protected String tabs(int tabDepth) {
+	protected String newline(int tabDepth) {
 		StringBuilder tabSB = new StringBuilder();
-		for(int i = 0; i < tabDepth; i++) tabSB.append("\t");
-		String tabs = tabSB.toString();
-		return tabs;
-	}
-	
-	public String toShortString() {
-		return toShortString(0);
-	}
-	
-	public String toShortString(int tabDepth) {
-		return toString(tabDepth);
+			if(tabDepth != -1) tabSB.append("\n"); {
+			for(int i = 0; i < tabDepth; i++) tabSB.append("\t");
+		}
+		return tabSB.toString();
 	}
 }

@@ -43,9 +43,8 @@ public class Program extends Loggable{
 		vars.add(rv3);
 	
 		Dataset dataset = Dataset.fromData(testData, vars);
-		dataset.toString();
 		BayesianNetwork bayesianNetwork = BayesianNetwork.learnBayesianNetwork(dataset);
 		
-		//bayesianNetwork.print();
+		bayesianNetwork.print();
 	}
 }

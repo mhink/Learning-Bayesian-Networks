@@ -23,32 +23,6 @@ public class RandomVariable extends Loggable{
 		states = new HashSet<String>();
 	}
 	
-	public String toShortString(int tabDepth) {
-		return super.toString(tabDepth).replace("RandomVariable@", "\"" + name+"\"@");
-	}
-	
-	public String toShortString() {
-		return this.toShortString(0);
-	}
-	
-	@Override
-	public String toString() {
-		return this.toString(0);
-	}
-	
-	@Override
-	public String toString(int tabDepth) {		
-		StringBuilder sb = new StringBuilder(super.toString(tabDepth));
-			sb.append(tabs(tabDepth)).append("\tName: \t\t\"" + name + "\"");
-			sb.append(tabs(tabDepth)).append("\tStates: \t{ ");
-		for(String state : states) sb.append(state + " ");
-		sb.deleteCharAt(sb.length()-1).append(" }")
-			.append(tabs(tabDepth)).append("\tParents:\t{ ");
-		for(RandomVariable parent : parents) sb.append(parent.toShortString() + " ");
-		sb.deleteCharAt(sb.length()-1).append(" }");
-		return sb.toString();
-	}
-	
 	@Override
 	public boolean equals(Object other) {
 		if(other == null) return false;
@@ -96,5 +70,32 @@ public class RandomVariable extends Loggable{
 	
 	public String randomState() {
 		return states.toArray(new String[0])[new Random().nextInt(states.size())];
+	}
+
+	public String toShortString() {
+		return this.toShortString(0);
+	}
+	
+	@Override
+	public String toShortString(int tabDepth) {
+		return super.toShortString(tabDepth).replace("RandomVariable", this.name);
+	}
+
+	@Override
+	public String toString() {
+		return this.toString(0);
+	}
+
+	@Override
+	public String toString(int tabDepth) {
+		StringBuilder sb = new StringBuilder(super.toString(tabDepth));
+		
+		sb.append(this.name + " = { ");
+		for(String state : states) sb.append(state + " ");
+		sb.deleteCharAt(sb.length()-1).append(" }\t");
+		sb.append("Parents:\t{ ");
+		for(RandomVariable parent : parents) sb.append(parent.toShortString() + " ");
+		sb.deleteCharAt(sb.length()-1).append(" }");
+		return sb.toString();
 	}
 }

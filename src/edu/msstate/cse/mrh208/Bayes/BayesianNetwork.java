@@ -15,16 +15,10 @@ import edu.msstate.cse.mrh208.Algorithms.AStar;
 public class BayesianNetwork extends Loggable{
 	public static BayesianNetwork goalNetwork;
 	public Dataset dataset;
-	private double heuristic = Double.NaN;
-	private Set<RandomVariable> bestParentSet;
 	public Set<RandomVariable> variablesInNetwork;
 	public Set<RandomVariable> variablesNotInNetwork;
-	
-	private BayesianNetwork(Dataset dataset) {
-		this.dataset = dataset;
-		this.variablesNotInNetwork = new HashSet<RandomVariable>(dataset.getVariables());
-		this.variablesInNetwork = new HashSet<RandomVariable>();
-	}
+	private double heuristic = Double.NaN;
+	private Set<RandomVariable> bestParentSet;
 	
 	public static BayesianNetwork learnBayesianNetwork(Dataset dataset) {
 		BayesianNetwork bayesianNetwork = new BayesianNetwork(dataset);	
@@ -36,38 +30,29 @@ public class BayesianNetwork extends Loggable{
 		
 		return result;
 	}
-	
-	@Override
-	public String toString(int tabDepth) {		
-		StringBuilder sb = new StringBuilder(tabs(tabDepth) + super.toString());
-		sb	.append(tabs(tabDepth + 1)).append("Goal     : ")
-			.append(this.goalNetwork.toShortString());
-		sb	.append(tabs(tabDepth + 1)).append("Heuristic: ")
-			.append(this.heuristic);
-		sb	.append(tabs(tabDepth + 1)).append("Variables in network: ");
-		for(RandomVariable in : variablesInNetwork)
-			sb	.append(tabs(tabDepth + 2))
-				.append(in.toShortString());
-		sb.append(tabs(tabDepth + 1)).append("Variables not in network: ");
-		for(RandomVariable out : variablesNotInNetwork)
-			sb	.append(tabs(tabDepth + 2))
-				.append(out.toShortString());
+
+	private BayesianNetwork(Dataset dataset) {
+		this.dataset = dataset;
+		this.variablesNotInNetwork = new HashSet<RandomVariable>(dataset.getVariables());
+		this.variablesInNetwork = new HashSet<RandomVariable>();
+	}
+
+	public int hashCode() {
+		//Might be something wrong with this.
+		int hash = 1;
+		hash = 31 * hash + this.variablesInNetwork.hashCode();
+		hash = 31 * hash + this.variablesNotInNetwork.hashCode();
 		
-		return sb.toString();
+		return hash;
 	}
-	
-	@Override
-	public String toString() {
-		return this.toString(0);
-	}
-	
+
 	public BayesianNetwork clone() {
 		BayesianNetwork clone = new BayesianNetwork(this.dataset);
 		clone.variablesInNetwork	.addAll(this.variablesInNetwork);
 		clone.variablesNotInNetwork	.addAll(this.variablesNotInNetwork);
 		return clone;
 	}
-	
+
 	public Set<RandomVariable> bestParentSet(RandomVariable X) {
 		if(bestParentSet == null) bestParentSet = calculateBestParentSet(X, this.variablesNotInNetwork, this.dataset);
 		return bestParentSet;
@@ -87,15 +72,6 @@ public class BayesianNetwork extends Loggable{
 		//TODO: Might be something wrong with this.
 		if(this.variablesInNetwork.equals(other.variablesInNetwork)) return true;
 		else return false;
-	}
-	
-	public int hashCode() {
-		//Might be something wrong with this.
-		int hash = 1;
-		hash = 31 * hash + this.variablesInNetwork.hashCode();
-		hash = 31 * hash + this.variablesNotInNetwork.hashCode();
-		
-		return hash;
 	}
 	
 	private static double calculateHeuristic(RandomVariable U, Set<RandomVariable> V, Dataset dataset) {
@@ -184,8 +160,36 @@ public class BayesianNetwork extends Loggable{
 		return (Math.log(x) / Math.log(2));
 	}
 	
+	@Override
+	public String toString() {
+		return this.toString(0);
+	}
+
+	@Override
+	public String toString(int tabDepth) {		
+		StringBuilder sb = new StringBuilder(super.toString(tabDepth));
+		sb.append(newline(tabDepth + 1)).append("Goal:\t");
+		if(goalNetwork != null) 
+			sb.append("BayesianNetwork@" + Integer.toHexString(goalNetwork.hashCode()));
+		else 
+			sb.append("null");
+		sb.append(newline(tabDepth + 1)).append("Heuristic:\t");
+		sb.append(Double.toString(this.heuristic));
+		sb.append(newline(tabDepth + 1)).append("Variables in network: ");
+		for(RandomVariable in : variablesInNetwork) {
+			sb.append(newline(tabDepth + 2)).append(in.toShortString()).append(" Parents: { ");
+			for(RandomVariable inParents : in.parents) sb.append(in.toShortString(-1).replaceAll("\t", ""));
+			sb.deleteCharAt(sb.length()-1).append(" }");
+		}
+
+		sb.append(newline(tabDepth + 1)).append("Variables not in network: ");
+		for(RandomVariable out : variablesNotInNetwork)
+			sb.append(out.toShortString(-1).replaceAll("\t", " "));
+		
+		return sb.toString();
+	}
+
 	public void print() {
-		//TODO: "BN.print" is low priority.
-		throw new UnsupportedOperationException();
+		System.out.println(this);
 	}
 }

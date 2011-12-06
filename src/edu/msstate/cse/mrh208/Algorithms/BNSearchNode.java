@@ -106,17 +106,13 @@ public class BNSearchNode extends Loggable implements Comparable<BNSearchNode>{
 	
 	@Override
 	public String toString(int tabDepth) {
-		StringBuilder tabSB = new StringBuilder("\n");
-		for(int i = 0; i < tabDepth; i++) tabSB.append("\t");
-		String tabs = tabSB.toString();
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append(tabs + super.toString());
-		sb.append(tabs).append("\t").append(this.bayesianNetwork.toString(tabDepth));
-		sb.append(tabs).append("\n\tH:\t" + this.heuristicValue);
-		sb.append(tabs).append("\n\tPC:\t" + this.pathCost);
-		if(randomVariable != null) sb.append(tabs).append("\n\t" + randomVariable.toShortString());
-		else sb.append(tabs).append("\n\tnull");
+		StringBuilder sb = new StringBuilder(super.toString(tabDepth));
+		sb.append(this.bayesianNetwork.toString(tabDepth + 1));
+		sb.append(newline(tabDepth + 1)).append("Heuristic:\t" + Double.toString(this.heuristicValue));
+		sb.append(newline(tabDepth + 1)).append("Path cost:\t" + Double.toString(this.pathCost));
+		sb.append(newline(tabDepth + 1)).append("Variable:\t");
+		if(randomVariable != null) sb.append(randomVariable.toShortString(-1));
+		else sb.append("null");
 		
 		return sb.toString();
 	}
