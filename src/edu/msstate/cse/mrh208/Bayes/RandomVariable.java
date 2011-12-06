@@ -19,8 +19,24 @@ public class RandomVariable extends Loggable{
 	public String name;
 	
 	public RandomVariable() {
-		parents = new HashSet<RandomVariable>();
-		states = new HashSet<String>();
+		this.parents = new HashSet<RandomVariable>();
+		this.states = new HashSet<String>();
+	}
+	
+	public RandomVariable(String name) {
+		this.parents = new HashSet<RandomVariable>();
+		this.states = new HashSet<String>();
+		this.name = name;
+	}
+	
+	private RandomVariable(RandomVariable from) {
+		this.parents = new HashSet<RandomVariable>(from.parents);
+		this.states  = from.states;
+		this.name 	= from.name;
+	}
+	
+	public RandomVariable clone() {
+		return new RandomVariable(this);
 	}
 	
 	@Override
@@ -32,6 +48,11 @@ public class RandomVariable extends Loggable{
 		if(this.name.equals(((RandomVariable)other).name)) return true;
 		
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return 31 * this.name.hashCode();
 	}
 	
 	public static List<Map<RandomVariable, String>> combineVariables(Set<RandomVariable> randomVariables) {
@@ -58,14 +79,6 @@ public class RandomVariable extends Loggable{
 		}
 		
 		return result;
-	}
-	
-	public RandomVariable copyWithoutParents() {
-		RandomVariable clone = new RandomVariable();
-		clone.states.addAll(this.states);
-		clone.name = this.name;
-		
-		return clone;
 	}
 	
 	public String randomState() {

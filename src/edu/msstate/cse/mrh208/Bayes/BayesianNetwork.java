@@ -17,24 +17,22 @@ public class BayesianNetwork extends Loggable{
 	public Dataset dataset;
 	public Set<RandomVariable> variablesInNetwork;
 	public Set<RandomVariable> variablesNotInNetwork;
-	private double heuristic = Double.NaN;
-	private Set<RandomVariable> bestParentSet;
 	
 	public static BayesianNetwork learnBayesianNetwork(Dataset dataset) {
-		BayesianNetwork bayesianNetwork = new BayesianNetwork(dataset);	
-		BayesianNetwork.goalNetwork		= new BayesianNetwork(dataset);
+		BayesianNetwork.goalNetwork				= new BayesianNetwork(dataset);
 		BayesianNetwork.goalNetwork.variablesInNetwork 		= new HashSet<RandomVariable>(dataset.getVariables());
 		BayesianNetwork.goalNetwork.variablesNotInNetwork 	= new HashSet<RandomVariable>();
 		
-		BayesianNetwork result = AStar.Search(bayesianNetwork);
+		BayesianNetwork bayesianNetwork 		= new BayesianNetwork(dataset);
+		bayesianNetwork.variablesInNetwork 		= new HashSet<RandomVariable>();
+		bayesianNetwork.variablesNotInNetwork 	= new HashSet<RandomVariable>(dataset.getVariables());
 		
+		BayesianNetwork result = (new AStar()).Search(bayesianNetwork);
 		return result;
 	}
 
 	private BayesianNetwork(Dataset dataset) {
 		this.dataset = dataset;
-		this.variablesNotInNetwork = new HashSet<RandomVariable>(dataset.getVariables());
-		this.variablesInNetwork = new HashSet<RandomVariable>();
 	}
 
 	public int hashCode() {
@@ -54,23 +52,20 @@ public class BayesianNetwork extends Loggable{
 	}
 
 	public Set<RandomVariable> bestParentSet(RandomVariable X) {
-		if(bestParentSet == null) bestParentSet = calculateBestParentSet(X, this.variablesNotInNetwork, this.dataset);
-		return bestParentSet;
+		return calculateBestParentSet(X, this.variablesNotInNetwork, this.dataset);
 	}
 	
 	public double heuristic(RandomVariable U) {
-		if(Double.valueOf(heuristic).equals(Double.NaN)) 
-			heuristic = calculateHeuristic(U, variablesNotInNetwork, dataset);
-		return heuristic;
+		return calculateHeuristic(U, this.variablesNotInNetwork, this.dataset);
 	}
 	
 	public double pathCost(RandomVariable X, Set<RandomVariable> S1) {
-		return calculateBestMDL(X, S1, dataset);
+		return calculateBestMDL(X, S1, this.dataset);
 	}
 	
 	public boolean equals(BayesianNetwork other) {
-		//TODO: Might be something wrong with this.
-		if(this.variablesInNetwork.equals(other.variablesInNetwork)) return true;
+		if(this.variablesInNetwork.equals(other.variablesInNetwork) &&
+		   this.variablesNotInNetwork.equals(other.variablesNotInNetwork)) return true;
 		else return false;
 	}
 	
@@ -100,7 +95,7 @@ public class BayesianNetwork extends Loggable{
 			if(mdl < lowest) lowest = mdl;
 		}
 		
-		return lowest;		
+		return lowest;
 	}
 	
 	private static Set<RandomVariable> calculateBestParentSet(RandomVariable X, Set<RandomVariable> parentCandidates, Dataset dataset) {
@@ -168,22 +163,22 @@ public class BayesianNetwork extends Loggable{
 	@Override
 	public String toString(int tabDepth) {		
 		StringBuilder sb = new StringBuilder(super.toString(tabDepth));
-		sb.append(newline(tabDepth + 1)).append("Goal:\t");
+		sb.append(newline(tabDepth + 1)).append("Goal:\t\t\t");
 		if(goalNetwork != null) 
 			sb.append("BayesianNetwork@" + Integer.toHexString(goalNetwork.hashCode()));
 		else 
-			sb.append("null");
-		sb.append(newline(tabDepth + 1)).append("Heuristic:\t");
-		sb.append(Double.toString(this.heuristic));
-		sb.append(newline(tabDepth + 1)).append("Variables in network: ");
-		for(RandomVariable in : variablesInNetwork) {
-			sb.append(newline(tabDepth + 2)).append(in.toShortString()).append(" Parents: { ");
-			for(RandomVariable inParents : in.parents) sb.append(in.toShortString(-1).replaceAll("\t", ""));
+			sb.append("NULL");
+		sb.append(newline(tabDepth + 1)).append("Variables in:\t");
+		if(variablesInNetwork.isEmpty()) sb.append("NONE");
+		else for(RandomVariable in : variablesInNetwork) {
+			sb.append(in.toShortString(tabDepth + 2)).append(" PARENTS: { ");
+			for(RandomVariable inParents : in.parents) sb.append(in.toShortString(-1));
 			sb.deleteCharAt(sb.length()-1).append(" }");
 		}
 
-		sb.append(newline(tabDepth + 1)).append("Variables not in network: ");
-		for(RandomVariable out : variablesNotInNetwork)
+		sb.append(newline(tabDepth + 1)).append("Variables out:\t");
+		if(variablesNotInNetwork.isEmpty()) sb.append("NONE");
+		else for(RandomVariable out : variablesNotInNetwork)
 			sb.append(out.toShortString(-1).replaceAll("\t", " "));
 		
 		return sb.toString();

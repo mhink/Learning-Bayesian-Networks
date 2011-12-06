@@ -34,7 +34,7 @@ public abstract class Loggable {
 	}
 	
 	public String toShortString(int tabDepth) {
-		StringBuilder sb = new StringBuilder(newline(tabDepth));
+		StringBuilder sb = new StringBuilder(newline(tabDepth) + "(");
 		sb.append(super.toString()
 				.replace("edu.msstate.cse.mrh208.", "")
 				.replace("Algorithms.", "")
@@ -47,15 +47,15 @@ public abstract class Loggable {
 		int ln = (((sbNameOnly.length() + 1) % 4) + sbHashOnly.length());
 		if(ln < 8) sb.append("\t");
 		sb.append("\t");
-		return "(" + sb.toString().replaceAll("@", " @ ");
+		return sb.insert(sb.length()-6, " ").toString().replaceAll("@", " @ ");
 	}
 	
 	public String toString(int tabDepth) {		
-		StringBuilder sb = new StringBuilder(newline(tabDepth));
+		StringBuilder sb = new StringBuilder(newline(tabDepth) + "(");
 		sb.append(super.toString()
 				.replace("edu.msstate.cse.mrh208.", "")
 				.replace("Algorithms.", "")
-				.replace("Bayes.", ""));
+				.replace("Bayes.", "") + ")");
 		
 		String test = sb.toString();
 		String sbNameOnly = test.replaceAll("\n\t*", "").replaceAll("@.*", "");
@@ -64,12 +64,26 @@ public abstract class Loggable {
 		int ln = (((sbNameOnly.length() + 1) % 4) + sbHashOnly.length());
 		if(ln < 8) sb.append("\t");
 		sb.append("\t");
-		return sb.toString();
+		return sb.insert(sb.length()-6, " ").toString().replaceAll("@", " @ ");
+	}
+	
+	public static String toShortString(Object object, int tabDepth) {
+		StringBuilder sb = new StringBuilder(newline(tabDepth));
+		sb.append("(" + object.getClass().getSimpleName() + "@" + Integer.toHexString(object.hashCode()) + ")");
+		
+		String test = sb.toString();
+		String sbNameOnly = test.replaceAll("\n\t*", "").replaceAll("@.*", "");
+		String sbHashOnly = test.replaceAll("\n\t*", "").replaceAll(".*@", "");
+		
+		int ln = (((sbNameOnly.length() + 1) % 4) + sbHashOnly.length());
+		if(ln < 8) sb.append("\t");
+		sb.append("\t");
+		return sb.insert(sb.length()-6, " ").toString().replaceAll("@", " @ ");
 	}
 
-	protected String newline(int tabDepth) {
+	protected static String newline(int tabDepth) {
 		StringBuilder tabSB = new StringBuilder();
-			if(tabDepth != -1) tabSB.append("\n"); {
+			if(tabDepth > -1) tabSB.append("\n"); {
 			for(int i = 0; i < tabDepth; i++) tabSB.append("\t");
 		}
 		return tabSB.toString();
