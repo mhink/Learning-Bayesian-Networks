@@ -47,7 +47,7 @@ public abstract class Loggable {
 		int ln = (((sbNameOnly.length() + 1) % 4) + sbHashOnly.length());
 		if(ln < 8) sb.append("\t");
 		sb.append("\t");
-		return sb.insert(sb.length()-6, " ").toString().replaceAll("@", " @ ");
+		return sb.toString().replaceAll("@", " @ ");
 	}
 	
 	public String toString(int tabDepth) {		
@@ -64,7 +64,7 @@ public abstract class Loggable {
 		int ln = (((sbNameOnly.length() + 1) % 4) + sbHashOnly.length());
 		if(ln < 8) sb.append("\t");
 		sb.append("\t");
-		return sb.insert(sb.length()-6, " ").toString().replaceAll("@", " @ ");
+		return sb.toString().replaceAll("@", " @ ");
 	}
 	
 	public static String toShortString(Object object, int tabDepth) {
@@ -78,7 +78,7 @@ public abstract class Loggable {
 		int ln = (((sbNameOnly.length() + 1) % 4) + sbHashOnly.length());
 		if(ln < 8) sb.append("\t");
 		sb.append("\t");
-		return sb.insert(sb.length()-6, " ").toString().replaceAll("@", " @ ");
+		return sb.toString().replaceAll("@", " @ ");
 	}
 
 	protected static String newline(int tabDepth) {

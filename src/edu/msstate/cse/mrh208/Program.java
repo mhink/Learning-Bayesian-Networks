@@ -1,17 +1,21 @@
 package edu.msstate.cse.mrh208;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.google.common.collect.Sets;
+
 import edu.msstate.cse.mrh208.Bayes.BayesianNetwork;
 import edu.msstate.cse.mrh208.Bayes.RandomVariable;
 
 public class Program extends Loggable{
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		RandomVariable rv1 = new RandomVariable();
 		rv1.name = "rv1";
@@ -42,9 +46,13 @@ public class Program extends Loggable{
 		vars.add(rv2);
 		vars.add(rv3);
 	
-		Dataset dataset = Dataset.fromData(testData, vars);
-		BayesianNetwork bayesianNetwork = BayesianNetwork.learnBayesianNetwork(dataset);
+		Dataset dataset;
+		String arg = Arrays.asList(args).iterator().next();
+		if(arg.equals("debug"))
+			dataset = Dataset.fromData(testData, vars);
+		else
+			dataset = Dataset.fromData("data/car.data");
 		
-		bayesianNetwork.print();
+		BayesianNetwork bayesianNetwork = BayesianNetwork.learnBayesianNetwork(dataset);
 	}
 }

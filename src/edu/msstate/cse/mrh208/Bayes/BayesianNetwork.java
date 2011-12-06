@@ -11,6 +11,7 @@ import com.google.common.collect.Sets;
 import edu.msstate.cse.mrh208.Dataset;
 import edu.msstate.cse.mrh208.Loggable;
 import edu.msstate.cse.mrh208.Algorithms.AStar;
+import edu.msstate.cse.mrh208.Algorithms.BNSearchNode;
 
 public class BayesianNetwork extends Loggable{
 	public static BayesianNetwork goalNetwork;
@@ -18,7 +19,7 @@ public class BayesianNetwork extends Loggable{
 	public Set<RandomVariable> variablesInNetwork;
 	public Set<RandomVariable> variablesNotInNetwork;
 	
-	public static BayesianNetwork learnBayesianNetwork(Dataset dataset) {
+	public static BayesianNetwork learnBayesianNetwork(Dataset dataset) throws Exception {
 		BayesianNetwork.goalNetwork				= new BayesianNetwork(dataset);
 		BayesianNetwork.goalNetwork.variablesInNetwork 		= new HashSet<RandomVariable>(dataset.getVariables());
 		BayesianNetwork.goalNetwork.variablesNotInNetwork 	= new HashSet<RandomVariable>();
@@ -32,16 +33,9 @@ public class BayesianNetwork extends Loggable{
 	}
 
 	private BayesianNetwork(Dataset dataset) {
-		this.dataset = dataset;
-	}
-
-	public int hashCode() {
-		//Might be something wrong with this.
-		int hash = 1;
-		hash = 31 * hash + this.variablesInNetwork.hashCode();
-		hash = 31 * hash + this.variablesNotInNetwork.hashCode();
-		
-		return hash;
+		this.dataset 				= dataset;
+		this.variablesInNetwork 	= new HashSet<RandomVariable>();
+		this.variablesNotInNetwork 	= new HashSet<RandomVariable>();
 	}
 
 	public BayesianNetwork clone() {
@@ -63,12 +57,6 @@ public class BayesianNetwork extends Loggable{
 		return calculateBestMDL(X, S1, this.dataset);
 	}
 	
-	public boolean equals(BayesianNetwork other) {
-		if(this.variablesInNetwork.equals(other.variablesInNetwork) &&
-		   this.variablesNotInNetwork.equals(other.variablesNotInNetwork)) return true;
-		else return false;
-	}
-	
 	private static double calculateHeuristic(RandomVariable U, Set<RandomVariable> V, Dataset dataset) {
 		double heuristicValue = 0d;
 		
@@ -80,7 +68,7 @@ public class BayesianNetwork extends Loggable{
 			VwithoutX = new HashSet<RandomVariable>(V);
 			VwithoutX.remove(X);
 			
-			heuristicValue += calculateBestMDL(X, V, dataset);
+			heuristicValue += calculateBestMDL(X, VwithoutX, dataset);
 		}
 		
 		return heuristicValue;
@@ -89,6 +77,7 @@ public class BayesianNetwork extends Loggable{
 	private static double calculateBestMDL(RandomVariable X, Set<RandomVariable> parentCandidates, Dataset dataset) {
 		Set<Set<RandomVariable>> parentCandidatePowerSet = Sets.powerSet(parentCandidates);
 		double lowest = Double.POSITIVE_INFINITY;
+		Set<RandomVariable> bestCandidate = new HashSet<RandomVariable>();
 		
 		for(Set<RandomVariable> parentCandidate : parentCandidatePowerSet) {
 			double mdl = MDL(X, parentCandidate, dataset);

@@ -8,7 +8,7 @@ import edu.msstate.cse.mrh208.Bayes.RandomVariable;
 import edu.msstate.cse.mrh208.Loggable;
 
 //NOTE: The search graph is an order graph of variables.
-public class BNSearchNode extends Loggable implements Comparable<BNSearchNode>{
+public class BNSearchNode extends Loggable {
 	
 	BNSearchNode 		parent;
 	BayesianNetwork 	bayesianNetwork;
@@ -17,12 +17,23 @@ public class BNSearchNode extends Loggable implements Comparable<BNSearchNode>{
 	RandomVariable		randomVariable;
 	Set<BNSearchNode> 	successors;
 	
+	@Override
+	public boolean equals(Object aThat) {
+		if(aThat == null) return false;
+		if(!(aThat instanceof BNSearchNode)) return false;
+		if(this == aThat) return true;
+		
+		BNSearchNode that = (BNSearchNode) aThat;
+		if(this.bayesianNetwork.variablesInNetwork.equals(that.bayesianNetwork.variablesInNetwork)) return true;
+		return false;
+	}
+	
 	public BNSearchNode(BayesianNetwork bayesianNetwork) {
 		this.parent 			= null;
 		this.bayesianNetwork 	= bayesianNetwork.clone();
 		this.pathCost			= 0;
 		this.heuristicValue 	= 0;
-		this.randomVariable		= new RandomVariable("NONE");
+		this.randomVariable		= new RandomVariable("DNE");
 		this.successors = new HashSet<BNSearchNode>();
 	}
 	
@@ -35,7 +46,8 @@ public class BNSearchNode extends Loggable implements Comparable<BNSearchNode>{
 			
 		this.pathCost 				= this.bayesianNetwork.pathCost(X, parent.bayesianNetwork.variablesInNetwork) + parentPathCost;
 		this.heuristicValue 		= this.bayesianNetwork.heuristic(X);
-		this.randomVariable.parents = this.bayesianNetwork.bestParentSet(X);
+		this.randomVariable.parents = new HashSet<RandomVariable>(this.bayesianNetwork.bestParentSet(X));
+		this.successors = new HashSet<BNSearchNode>();
 	}
 	
 	public double estimatedTotalCost() {
@@ -43,17 +55,28 @@ public class BNSearchNode extends Loggable implements Comparable<BNSearchNode>{
 	}
 	
 	public boolean isGoal() {
-		return this.bayesianNetwork.equals(BayesianNetwork.goalNetwork);
+		if(this.bayesianNetwork.variablesInNetwork.equals(BayesianNetwork.goalNetwork.variablesInNetwork)) return true;
+		return false;
 	}
 	
-	public void expand() {
+	public void expand() throws Exception{
 		for(RandomVariable X : bayesianNetwork.variablesNotInNetwork) {
 			BNSearchNode successor = new BNSearchNode(this, X, bayesianNetwork, pathCost);
-			successors.add(successor);		
+			successors.add(successor);
+		}
+		
+		for(BNSearchNode successor : successors) {
+			int sVIN 	= successor .bayesianNetwork.variablesInNetwork.size();
+			int sVNIN 	= successor .bayesianNetwork.variablesNotInNetwork.size();
+			int tVIN 	= this		.bayesianNetwork.variablesInNetwork.size();
+			int tVNIN 	= this		.bayesianNetwork.variablesNotInNetwork.size();
+			if( sVIN + sVNIN != tVIN + tVNIN)
+				throw new Exception("A successor hasn't done its variables right.");
+				
 		}
 	}
 	
-	public Set<BNSearchNode> getSuccessors() {
+	public Set<BNSearchNode> getSuccessors() throws Exception{
 		if(successors.isEmpty()) this.expand();
 		return successors;
 	}
@@ -86,6 +109,7 @@ public class BNSearchNode extends Loggable implements Comparable<BNSearchNode>{
 		else sb.append(this.bayesianNetwork.toString(tabDepth + 1));
 		sb.append(newline(tabDepth + 1)).append("Heuristic:\t" + Double.toString(this.heuristicValue));
 		sb.append(newline(tabDepth + 1)).append("Path cost:\t" + Double.toString(this.pathCost));
+		sb.append(newline(tabDepth + 1)).append("Estimate:\t" + Double.toString(this.estimatedTotalCost()));
 		sb.append(newline(tabDepth + 1)).append("Variable:\t");
 		if(randomVariable != null) sb.append(randomVariable.toShortString(-1));
 		else sb.append("null");
@@ -93,38 +117,4 @@ public class BNSearchNode extends Loggable implements Comparable<BNSearchNode>{
 		
 		return sb.toString();
 	}
-
-	//NOTE:
-	//This comparator imposes an ordering that is inconsistent
-	//with equals()!!!
-	@Override
-	public int compareTo(BNSearchNode arg0) {
-		if(this.estimatedTotalCost() < arg0.estimatedTotalCost()) return -1;
-		if(this.estimatedTotalCost() == arg0.estimatedTotalCost()) return 0;
-		if(this.estimatedTotalCost() > arg0.estimatedTotalCost()) return 1;
-		
-		return 0;
-	}
-
-	@Override
-	public boolean equals(Object aThat) {
-		if(this == aThat) return true;
-		if( !(aThat instanceof BNSearchNode) ) return false;
-		BNSearchNode that = (BNSearchNode)aThat;
-		
-		return this.bayesianNetwork.equals(that.bayesianNetwork);
-	}
-
-	@Override
-	public int hashCode() {
-		//TODO: make sure this actually works as intended.
-		//In other words, ensure that
-		//BNSN1 == BNSN2 => BNSN1.hash == BNSN3.hash
-		int hash = 1;
-		hash = hash * 31 + bayesianNetwork.hashCode();
-		
-		
-		return hash;
-	}
-
 }

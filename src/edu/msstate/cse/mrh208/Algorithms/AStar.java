@@ -1,27 +1,49 @@
 package edu.msstate.cse.mrh208.Algorithms;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Scanner;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import edu.msstate.cse.mrh208.Bayes.BayesianNetwork;
+import edu.msstate.cse.mrh208.Bayes.RandomVariable;
 import edu.msstate.cse.mrh208.Loggable;
 
 
 public class AStar extends Loggable{
 	HashSet<BNSearchNode>	closedSet;
-	TreeSet<BNSearchNode> 	openSet;
+	ArrayList<BNSearchNode> openSet;
 	BNSearchNode 			currentNode;
 	BNSearchNode			openNode;
 	BNSearchNode			s;
 	
-	public BayesianNetwork Search(BayesianNetwork initialNetwork) {
+	public BayesianNetwork Search(BayesianNetwork initialNetwork) throws Exception{
 		closedSet 	= new HashSet<BNSearchNode>();
-		openSet 	= new TreeSet<BNSearchNode>();
+		openSet 	= new ArrayList<BNSearchNode>();
 		
 		openSet.add(new BNSearchNode(initialNetwork));
 		
 		while(!openSet.isEmpty()) {
-			currentNode = openSet.pollFirst();
+			Collections.sort(openSet, new Comparator<BNSearchNode>(){
+				@Override
+				public int compare(BNSearchNode o1, BNSearchNode o2) {
+					if(o1.estimatedTotalCost() < o2.estimatedTotalCost()) return -1;
+					if(o1.estimatedTotalCost() == o2.estimatedTotalCost()) return 0;
+					if(o1.estimatedTotalCost() > o2.estimatedTotalCost()) return 1;
+					return 0;
+				}
+			});
+			System.out.println(this);
+			Scanner sc = new Scanner(System.in);
+			sc.nextLine();
+			
+			currentNode = openSet.get(0);
+			openSet.remove(0);
+			
 			if(currentNode.isGoal()) {
 				return currentNode.bayesianNetwork;
 			}
@@ -34,9 +56,9 @@ public class AStar extends Loggable{
 				
 				openNode = null;
 				
-				//The key here is that if the openSet contains an element equal to s, then
-				//openSet.ceiling(s) will return that element.  Could probably also do floor(s).
-				if(openSet.contains(s)) openNode = openSet.ceiling(s);
+				if(openSet.indexOf(s) != -1)
+					openNode = openSet.get(openSet.indexOf(s));
+				
 				openSet.add(BNSearchNode.bestPathCost(s, openNode));
 			}
 			this.s = null;
@@ -54,19 +76,31 @@ public class AStar extends Loggable{
 			sb.append(newline(2)).append("null");
 		else {
 			sb.append(currentNode.toString(2));
-			if(this.currentNode.successors.isEmpty()) 
-				sb.append(" NONE");
-			else 
-				for(BNSearchNode succ : this.currentNode.successors)
-					if(s != null && s.equals(succ)) sb.append(newline(3) + "   *").append(succ.toShortString(-1));
-					else sb.append(newline(4)).append(succ.toShortString(-1));
+			if(s != null) {
+				sb.append(newline(3)).append("  S:").append(s.toShortString(-1)).append("EHC: " + s.estimatedTotalCost());
+				for(RandomVariable rv : s.bayesianNetwork.variablesInNetwork)
+					sb.append(rv.toShortString(5));
+			}
+			else sb.append(newline(3)).append("  S: null");
+			
+			sb.append(newline(0));
+			
+			if(this.currentNode.successors == null) 
+				sb.append("null");
+			else {
+				for(BNSearchNode succ : this.currentNode.successors) {
+					sb.append(succ.toShortString(4)).append("EHC: " + succ.estimatedTotalCost());
+					for(RandomVariable rv : succ.bayesianNetwork.variablesInNetwork)
+						sb.append(rv.toShortString(5));
+				}
+			}
 		}
 		
 		sb.append("\n" + newline(1)).append("OPEN NODE");
 		if(openNode == null)
 			sb.append(newline(2)).append("null");
 		else {
-			sb.append(openNode.toString(2));
+			sb.append(openNode.toShortString(2));
 			if(openNode.randomVariable != null) 
 				sb.append(" " + openNode.randomVariable.name);
 			else sb.append("no variable");
@@ -74,16 +108,20 @@ public class AStar extends Loggable{
 		
 		sb.append("\n" + newline(1)).append("OPEN SET\t");
 		//sb.append(Loggable.toString(openSet, -1));
-		if(openSet.isEmpty()) sb.append(newline(2)).append("NONE");
-		else for(BNSearchNode bnsn : openSet) {
-			sb.append(bnsn.toString(2));
-		}
+		if(openSet.isEmpty()) 
+			sb.append(newline(2)).append("NONE");
+		else 
+			for(BNSearchNode bnsn : openSet) {
+				sb.append(bnsn.toShortString(4)).append("EHC: " + bnsn.estimatedTotalCost());
+				for(RandomVariable rv : bnsn.bayesianNetwork.variablesInNetwork)
+					sb.append(rv.toShortString(5));
+			}
 		
 		sb.append("\n" + newline(1)).append("CLOSED SET\t");
 		//sb.append(Loggable.toString(closedSet, -1));
 		if(closedSet.isEmpty()) sb.append(newline(2)).append("NONE");
 		else for(BNSearchNode bnsn : closedSet) {
-			sb.append(bnsn.toString(2));
+			sb.append(bnsn.toShortString(2));
 		}
 		
 		return sb.toString();

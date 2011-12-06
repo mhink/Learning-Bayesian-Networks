@@ -39,22 +39,6 @@ public class RandomVariable extends Loggable{
 		return new RandomVariable(this);
 	}
 	
-	@Override
-	public boolean equals(Object other) {
-		if(other == null) return false;
-		if(other == this) return true;
-		if(other.getClass() != this.getClass()) return false;
-		
-		if(this.name.equals(((RandomVariable)other).name)) return true;
-		
-		return false;
-	}
-	
-	@Override
-	public int hashCode() {
-		return 31 * this.name.hashCode();
-	}
-	
 	public static List<Map<RandomVariable, String>> combineVariables(Set<RandomVariable> randomVariables) {
 		List<Set<String>> 					states 	= new ArrayList<Set<String>>();
 		List<Map<RandomVariable, String>> 	result 	= new ArrayList<Map<RandomVariable, String>>();
@@ -87,6 +71,17 @@ public class RandomVariable extends Loggable{
 
 	public String toShortString() {
 		return this.toShortString(0);
+	}
+	
+	@Override 
+	public boolean equals(Object aThat) {
+		if(aThat == null) return false;
+		if(!(aThat instanceof RandomVariable)) return false;
+		if(aThat == this) return true;
+		
+		RandomVariable that = (RandomVariable) aThat;
+		if(this.name.equals(that.name)) return true;
+		return false;
 	}
 	
 	@Override
