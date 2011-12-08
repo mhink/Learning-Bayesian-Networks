@@ -2,8 +2,8 @@ package edu.msstate.cse.mrh208.Bayes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -11,26 +11,55 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-import edu.msstate.cse.mrh208.Loggable;
+public class RandomVariable {
 
-public class RandomVariable extends Loggable{
+	@Override
+	public String toString() {
+		return this.name;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof RandomVariable))
+			return false;
+		RandomVariable other = (RandomVariable) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
+
 	public Set<RandomVariable> parents;
 	public Set<String> states;
 	public String name;
 	
 	public RandomVariable() {
-		this.parents = new HashSet<RandomVariable>();
-		this.states = new HashSet<String>();
+		this.parents = new LinkedHashSet<RandomVariable>();
+		this.states = new LinkedHashSet<String>();
 	}
 	
 	public RandomVariable(String name) {
-		this.parents = new HashSet<RandomVariable>();
-		this.states = new HashSet<String>();
+		this.parents = new LinkedHashSet<RandomVariable>();
+		this.states = new LinkedHashSet<String>();
 		this.name = name;
 	}
 	
 	private RandomVariable(RandomVariable from) {
-		this.parents = new HashSet<RandomVariable>(from.parents);
+		this.parents = new LinkedHashSet<RandomVariable>(from.parents);
 		this.states  = from.states;
 		this.name 	= from.name;
 	}
@@ -67,43 +96,5 @@ public class RandomVariable extends Loggable{
 	
 	public String randomState() {
 		return states.toArray(new String[0])[new Random().nextInt(states.size())];
-	}
-
-	public String toShortString() {
-		return this.toShortString(0);
-	}
-	
-	@Override 
-	public boolean equals(Object aThat) {
-		if(aThat == null) return false;
-		if(!(aThat instanceof RandomVariable)) return false;
-		if(aThat == this) return true;
-		
-		RandomVariable that = (RandomVariable) aThat;
-		if(this.name.equals(that.name)) return true;
-		return false;
-	}
-	
-	@Override
-	public String toShortString(int tabDepth) {
-		return super.toShortString(tabDepth).replace("RandomVariable", this.name);
-	}
-
-	@Override
-	public String toString() {
-		return this.toString(0);
-	}
-
-	@Override
-	public String toString(int tabDepth) {
-		StringBuilder sb = new StringBuilder(super.toString(tabDepth));
-		
-		sb.append(this.name + " = { ");
-		for(String state : states) sb.append(state + " ");
-		sb.deleteCharAt(sb.length()-1).append(" }\t");
-		sb.append("Parents:\t{ ");
-		for(RandomVariable parent : parents) sb.append(parent.toShortString() + " ");
-		sb.deleteCharAt(sb.length()-1).append(" }");
-		return sb.toString();
 	}
 }

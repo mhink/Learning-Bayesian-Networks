@@ -2,7 +2,7 @@ package edu.msstate.cse.mrh208;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -10,14 +10,15 @@ import java.util.Set;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+
 import edu.msstate.cse.mrh208.Bayes.RandomVariable;
 
-public class Dataset extends Loggable{
+public class Dataset {
 	Set<RandomVariable>		variables;
 	private Multiset<Entry> entries;
 	
 	public Dataset() {
-		variables 	= new HashSet<RandomVariable>();
+		variables 	= new LinkedHashSet<RandomVariable>();
 		entries		= HashMultiset.create();
 	}
 	
@@ -128,17 +129,5 @@ public class Dataset extends Loggable{
 	
 	public int size() {
 		return entries.size();
-	}
-	
-	@Override
-	public String toString() {
-		return this.toString(0);
-	}
-	
-	@Override
-	public String toString(int tabDepth) {
-		StringBuilder sb = new StringBuilder(super.toString(tabDepth));
-		for(Entry entry : entries) sb.append(entry.toString(tabDepth + 1));
-		return sb.toString();
 	}
 }

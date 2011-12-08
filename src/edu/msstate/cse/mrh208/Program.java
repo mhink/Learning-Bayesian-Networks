@@ -1,19 +1,16 @@
 package edu.msstate.cse.mrh208;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.Sets;
-
 import edu.msstate.cse.mrh208.Bayes.BayesianNetwork;
 import edu.msstate.cse.mrh208.Bayes.RandomVariable;
 
-public class Program extends Loggable{
+public class Program {
 	
 	public static void main(String[] args) throws Exception {
 		
@@ -33,26 +30,31 @@ public class Program extends Loggable{
 		rv3.states.add("x");
 		rv3.states.add("y");
 		
+		RandomVariable rv4 = new RandomVariable();
+		rv4.name = "rv4";
+		rv4.states.add("M");
+		rv4.states.add("N");
+		
 		List<Map<RandomVariable, String>> testData = new ArrayList<Map<RandomVariable, String>>();
 		for(int i = 0; i < 20; i++) {
 			Map<RandomVariable, String> constraints = new HashMap<RandomVariable, String>();
 			constraints.put(rv1, rv1.randomState());
 			constraints.put(rv2, rv2.randomState());
 			constraints.put(rv3, rv3.randomState());
+			constraints.put(rv4, rv4.randomState());
 			testData.add(constraints);
 		}
-		Set<RandomVariable> vars = new HashSet<RandomVariable>();
+		
+		Set<RandomVariable> vars = new LinkedHashSet<RandomVariable>();
 		vars.add(rv1);
 		vars.add(rv2);
 		vars.add(rv3);
+		vars.add(rv4);
 	
-		Dataset dataset;
-		String arg = Arrays.asList(args).iterator().next();
-		if(arg.equals("debug"))
-			dataset = Dataset.fromData(testData, vars);
-		else
-			dataset = Dataset.fromData("data/car.data");
+		Dataset dataset = Dataset.fromData("data/car.data");
 		
 		BayesianNetwork bayesianNetwork = BayesianNetwork.learnBayesianNetwork(dataset);
+		
+		System.out.println(bayesianNetwork);
 	}
 }
