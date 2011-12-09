@@ -36,7 +36,7 @@ public class RandomVariable {
 	}
 	
 	public String randomState() {
-		return states.toArray(new String[0])[new Random().nextInt(states.size())];
+		return states.toArray(new String[0])[new Random((new Date()).getTime()).nextInt(states.size())];
 	}
 	
 	public void addState(String state) {
