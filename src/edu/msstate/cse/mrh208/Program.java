@@ -1,60 +1,151 @@
 package edu.msstate.cse.mrh208;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
 import java.util.Set;
 
+import edu.msstate.cse.mrh208.Algorithms.MDL;
 import edu.msstate.cse.mrh208.Bayes.BayesianNetwork;
 import edu.msstate.cse.mrh208.Bayes.RandomVariable;
 
 public class Program {
 	
 	public static void main(String[] args) throws Exception {
+		ADTree dataset;
+		BayesianNetwork bayesianNetwork;
 		
-		RandomVariable rv1 = new RandomVariable();
-		rv1.name = "rv1";
-		rv1.states.add("A");
-		rv1.states.add("B");
-		rv1.states.add("C");
+		System.out.println("Testing on 2variables, 2states...");
+		dataset = testData(2, 2, 1000);
+		bayesianNetwork = BayesianNetwork.learnBayesianNetwork(dataset);
+		System.out.println(bayesianNetwork.toString());
 		
-		RandomVariable rv2 = new RandomVariable();
-		rv2.name = "rv2";
-		rv2.states.add("1");
-		rv2.states.add("2");
+		System.out.println("Testing on 3variables, 2states...");
+		dataset = testData(3, 2, 1000);
+		bayesianNetwork = BayesianNetwork.learnBayesianNetwork(dataset);
+		System.out.println(bayesianNetwork.toString());
 		
-		RandomVariable rv3 = new RandomVariable();
-		rv3.name = "rv3";
-		rv3.states.add("x");
-		rv3.states.add("y");
+		System.out.println("Testing on 4variables, 3states...");
+		dataset = testData(4, 3, 1000);
+		bayesianNetwork = BayesianNetwork.learnBayesianNetwork(dataset);
+		System.out.println(bayesianNetwork.toString());
 		
-		RandomVariable rv4 = new RandomVariable();
-		rv4.name = "rv4";
-		rv4.states.add("M");
-		rv4.states.add("N");
+		System.out.println("Testing on 5variables, 4states...");
+		dataset = testData(5, 4, 1000);
+		bayesianNetwork = BayesianNetwork.learnBayesianNetwork(dataset);
+		System.out.println(bayesianNetwork.toString());
 		
-		List<Map<RandomVariable, String>> testData = new ArrayList<Map<RandomVariable, String>>();
-		for(int i = 0; i < 20; i++) {
-			Map<RandomVariable, String> constraints = new HashMap<RandomVariable, String>();
-			constraints.put(rv1, rv1.randomState());
-			constraints.put(rv2, rv2.randomState());
-			constraints.put(rv3, rv3.randomState());
-			constraints.put(rv4, rv4.randomState());
-			testData.add(constraints);
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter a number of variables, or 0 to quit");
+		int numVars = sc.nextInt();
+		if(numVars == 0) return;
+		System.out.println("Enter a number of states per variable, or 0 to quit");
+		int numStates = sc.nextInt();
+		if(numStates == 0) return;
+		
+		System.out.println("Testing on "+numVars+"variables, "+numStates+"states...");
+		dataset = testData(numVars, numStates, 1000);
+		bayesianNetwork = BayesianNetwork.learnBayesianNetwork(dataset);
+		System.out.println(bayesianNetwork.toString());
+		
+	}
+	
+	public static ADTree testData(int NUM_VARIABLES, int NUM_STATES,  int NUM_DATA) {
+		List<RandomVariable> rvs = new ArrayList<RandomVariable>();
+		
+		for(int i = 0; i < NUM_VARIABLES; i++) {
+			RandomVariable rv = new RandomVariable();
+			rv.name = "rv" + i;
+			for(int j = 0; j < NUM_STATES; j++) {
+				rv.states.add(Integer.toString(j));
+			}
+			rvs.add(rv);
 		}
 		
-		Set<RandomVariable> vars = new LinkedHashSet<RandomVariable>();
-		vars.add(rv1);
-		vars.add(rv2);
-		vars.add(rv3);
-		vars.add(rv4);
+		List<List<String>> data = new ArrayList<List<String>>();
+		for(int i = 0; i < NUM_DATA; i++) {
+			List<String> entry = new ArrayList<String>();
+			for(RandomVariable rv : rvs) 
+				entry.add(rv.randomState());
+			data.add(entry);
+		}
+		
+		return new ADTree(rvs, data);
+	}
 	
-		Dataset dataset = Dataset.fromData("data/car.data");
+	public static ADTree fromData(String file) throws Exception {
+		Scanner sc = new Scanner(new File(file));
 		
-		BayesianNetwork bayesianNetwork = BayesianNetwork.learnBayesianNetwork(dataset);
+		List<RandomVariable> rvs = new ArrayList<RandomVariable>();
+
+		RandomVariable buying = new RandomVariable();
+		buying.name = "buying";
+		buying.addState("vhigh");
+		buying.addState("high");
+		buying.addState("med");
+		buying.addState("low");
+		rvs.add(buying);
+
+		RandomVariable maint = new RandomVariable();
+		maint.name = "maint";
+		maint.addState("vhigh");
+		maint.addState("high");
+		maint.addState("med");
+		maint.addState("low");
+		rvs.add(maint);
+
+		RandomVariable doors = new RandomVariable();
+		doors.name = "doors";
+		doors.addState("2");
+		doors.addState("3");
+		doors.addState("4");
+		doors.addState("5more");
+		rvs.add(doors);
+
+		RandomVariable persons = new RandomVariable();
+		persons.name = "persons";
+		persons.addState("2");
+		persons.addState("4");
+		persons.addState("more");
+		rvs.add(persons);
+
+		RandomVariable lug_boot = new RandomVariable();
+		lug_boot.name = "lug_boot";
+		lug_boot.addState("small");
+		lug_boot.addState("med");
+		lug_boot.addState("big");
+		rvs.add(lug_boot);
+
+		RandomVariable safety = new RandomVariable();
+		safety.name = "safety";
+		safety.addState("low");
+		safety.addState("med");
+		safety.addState("high");
+		rvs.add(safety);
 		
-		System.out.println(bayesianNetwork);
+		RandomVariable carClass = new RandomVariable();
+		carClass.name = "carClass";
+		carClass.addState("unacc");
+		carClass.addState("acc");
+		carClass.addState("good");
+		carClass.addState("vgood");
+		rvs.add(carClass);
+		
+		List<List<String>> data = new ArrayList<List<String>>();
+		
+		while(sc.hasNext()) {
+			data.add(Arrays.asList(sc.nextLine().split(",")));			
+		}
+		
+		ADTree test = new ADTree(rvs, data);
+		
+		return test;
 	}
 }
